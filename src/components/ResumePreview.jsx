@@ -2,7 +2,8 @@ import React, { useRef, useState } from 'react';
 import { 
   Printer, Download, ZoomIn, ZoomOut, Maximize2, 
   Palette, Type, FileText, Check, Copy, Compass, 
-  Square, RectangleHorizontal, Layout
+  Square, RectangleHorizontal, Layout, Sparkles, Mail,
+  Monitor, Grid
 } from 'lucide-react';
 
 // Import All 22 Universal Resume Templates
@@ -29,11 +30,12 @@ import CleanCorporateTemplate from './templates/CleanCorporateTemplate';
 import SwissInternationalTemplate from './templates/SwissInternationalTemplate';
 import LandscapeExecutiveSlideTemplate from './templates/LandscapeExecutiveSlideTemplate';
 
-import { COLOR_THEMES, FONT_OPTIONS } from '../data/defaultData';
+import { COLOR_THEMES, FONT_OPTIONS, TEMPLATES_CATALOG } from '../data/defaultData';
 
 export default function ResumePreview({
   resumeData,
   selectedTemplate,
+  setSelectedTemplate,
   themeColor,
   setThemeColor,
   fontOption,
@@ -41,10 +43,13 @@ export default function ResumePreview({
   paperSize,
   setPaperSize,
   orientation = 'portrait',
-  setOrientation
+  setOrientation,
+  onOpenTemplatesModal,
+  onOpenCoverLetter
 }) {
   const [zoomLevel, setZoomLevel] = useState(85);
   const [copied, setCopied] = useState(false);
+  const [deskStyle, setDeskStyle] = useState('grid'); // 'grid' | 'slate' | 'oled'
   const printRef = useRef(null);
 
   const currentTheme = COLOR_THEMES.find(t => t.id === themeColor) || COLOR_THEMES[0];
@@ -53,7 +58,6 @@ export default function ResumePreview({
   const isLandscape = orientation === 'landscape';
 
   const handlePrint = () => {
-    // Dynamic print style for orientation
     const printStyle = document.createElement('style');
     printStyle.id = 'dynamic-print-page-style';
     printStyle.innerHTML = `@page { size: ${paperSize === 'a4' ? 'A4' : 'letter'} ${orientation}; margin: 8mm; }`;
@@ -136,6 +140,19 @@ export default function ResumePreview({
     }
   };
 
+  // Fast switch list of popular templates
+  const quickTemplates = [
+    { id: 'modern-ats', name: 'ATS Pro' },
+    { id: 'executive-ivy', name: 'Ivy Wall St' },
+    { id: 'creative-studio', name: 'Creative' },
+    { id: 'tech-terminal', name: 'Terminal' },
+    { id: 'silicon-startup', name: 'Startup' },
+    { id: 'compact-one-page', name: 'One-Page' },
+    { id: 'infographic-metrics', name: 'Metrics' },
+    { id: 'dark-executive', name: 'Dark Mode' },
+    { id: 'landscape-executive-slide', name: 'Landscape Slide' }
+  ];
+
   // Dimensions based on Paper Size & Orientation
   const paperWidth = paperSize === 'a4' 
     ? (isLandscape ? '297mm' : '210mm') 
@@ -145,10 +162,55 @@ export default function ResumePreview({
     ? (isLandscape ? '210mm' : '297mm') 
     : (isLandscape ? '8.5in' : '11in');
 
+  const getDeskBackgroundClass = () => {
+    if (deskStyle === 'grid') return 'bg-slate-950 bg-grid-pattern';
+    if (deskStyle === 'oled') return 'bg-black';
+    return 'bg-slate-900';
+  };
+
   return (
     <div className="flex flex-col h-full">
-      {/* Top Controls Toolbar (Hidden when printing) */}
-      <div className="no-print bg-slate-800/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-3 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-md">
+      {/* Quick Architecture Switcher Strip (Hidden when printing) */}
+      <div className="no-print flex items-center justify-between gap-2 overflow-x-auto pb-2 mb-2 scrollbar-none">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-blue-400" />
+            Quick Switch:
+          </span>
+          {quickTemplates.map(t => {
+            const isSelected = selectedTemplate === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => {
+                  if (setSelectedTemplate) setSelectedTemplate(t.id);
+                  if (t.id === 'landscape-executive-slide' && setOrientation) {
+                    setOrientation('landscape');
+                  }
+                }}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20'
+                    : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60'
+                }`}
+              >
+                {t.name}
+              </button>
+            );
+          })}
+          {onOpenTemplatesModal && (
+            <button
+              onClick={onOpenTemplatesModal}
+              className="px-2 py-1 rounded-lg text-[11px] font-bold text-blue-400 hover:text-blue-300 hover:bg-blue-950/40 border border-blue-500/30 whitespace-nowrap transition-colors"
+            >
+              + All 22
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Main Controls Toolbar (Hidden when printing) */}
+      <div className="no-print bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-3 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-xl">
         {/* Left: Styling Controls (Colors, Fonts, Orientation & Paper) */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Color palette */}
@@ -164,7 +226,7 @@ export default function ResumePreview({
                   onClick={() => setThemeColor(theme.id)}
                   title={theme.name}
                   className={`w-5 h-5 rounded-full border-2 transition-transform ${
-                    themeColor === theme.id ? 'scale-115 border-white ring-2 ring-blue-500/50' : 'border-transparent opacity-80 hover:opacity-100'
+                    themeColor === theme.id ? 'scale-115 border-white ring-2 ring-blue-500/50 shadow-md' : 'border-transparent opacity-80 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: theme.primary }}
                 />
@@ -180,7 +242,7 @@ export default function ResumePreview({
             <select
               value={fontOption}
               onChange={(e) => setFontOption(e.target.value)}
-              className="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-blue-500"
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-blue-500"
             >
               {FONT_OPTIONS.map(f => (
                 <option key={f.id} value={f.id}>{f.name}</option>
@@ -198,7 +260,7 @@ export default function ResumePreview({
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
                 orientation === 'portrait'
                   ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+                  : 'bg-slate-800 text-slate-400 hover:text-slate-200'
               }`}
               title="Portrait Orientation (Standard Vertical)"
             >
@@ -210,7 +272,7 @@ export default function ResumePreview({
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
                 orientation === 'landscape'
                   ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+                  : 'bg-slate-800 text-slate-400 hover:text-slate-200'
               }`}
               title="Landscape Orientation (Widescreen 11x8.5 Slide)"
             >
@@ -221,27 +283,23 @@ export default function ResumePreview({
 
           <div className="h-4 w-px bg-slate-700 hidden sm:block"></div>
 
-          {/* Paper format */}
+          {/* Desk Canvas Lighting Toggle */}
           <div className="flex items-center gap-1 text-xs">
-            <span className="text-[11px] text-slate-400">Size:</span>
-            {['letter', 'a4'].map(size => (
-              <button
-                key={size}
-                onClick={() => setPaperSize(size)}
-                className={`px-2 py-0.5 rounded text-[11px] uppercase font-bold transition-colors ${
-                  paperSize === size ? 'bg-slate-700 text-white border border-slate-600' : 'bg-slate-900 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {size}
-              </button>
-            ))}
+            <span className="text-[11px] text-slate-400">Desk:</span>
+            <button
+              onClick={() => setDeskStyle(deskStyle === 'grid' ? 'oled' : 'grid')}
+              className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+              title="Toggle Desk Background (Grid vs Pitch Black)"
+            >
+              <Grid className="w-3.5 h-3.5 text-slate-400" />
+            </button>
           </div>
         </div>
 
         {/* Right: Zoom & Export Actions */}
         <div className="flex items-center gap-2">
           {/* Zoom buttons */}
-          <div className="flex items-center bg-slate-900 rounded-lg p-0.5 border border-slate-700">
+          <div className="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700">
             <button
               onClick={() => setZoomLevel(prev => Math.max(50, prev - 10))}
               className="p-1 text-slate-400 hover:text-white transition-colors"
@@ -261,7 +319,7 @@ export default function ResumePreview({
             </button>
             <button
               onClick={() => setZoomLevel(isLandscape ? 75 : 85)}
-              className="p-1 text-slate-400 hover:text-white border-l border-slate-800 ml-0.5"
+              className="p-1 text-slate-400 hover:text-white border-l border-slate-700 ml-0.5"
               title="Reset Zoom"
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -271,7 +329,7 @@ export default function ResumePreview({
           {/* Markdown Copy */}
           <button
             onClick={copyMarkdown}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200 transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200 transition-colors"
             title="Copy Text/Markdown"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -281,7 +339,7 @@ export default function ResumePreview({
           {/* Print / Save PDF Button */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-blue-500/25 transition-all active:scale-95"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print / PDF ({isLandscape ? 'Landscape' : 'Portrait'})</span>
@@ -289,8 +347,8 @@ export default function ResumePreview({
         </div>
       </div>
 
-      {/* Live Resume Canvas Area */}
-      <div className="flex-1 overflow-auto bg-slate-950/80 rounded-2xl p-4 sm:p-8 flex justify-center items-start border border-slate-800/80">
+      {/* Live Resume Canvas Area with Desk Backdrop */}
+      <div className={`flex-1 overflow-auto rounded-2xl p-4 sm:p-8 flex justify-center items-start border border-slate-800/80 transition-colors duration-300 ${getDeskBackgroundClass()}`}>
         <div 
           className="transition-transform duration-200 origin-top flex justify-center w-full"
           style={{ transform: `scale(${zoomLevel / 100})` }}

@@ -6,8 +6,10 @@ import ResumePreview from './components/ResumePreview';
 import Footer from './components/Footer';
 import ATSScoreModal from './components/ATSScoreModal';
 import TemplateCatalogModal from './components/TemplateCatalogModal';
+import CoverLetterModal from './components/CoverLetterModal';
+import CommandPaletteModal from './components/CommandPaletteModal';
 import { SAMPLE_PROFILES, TEMPLATES_CATALOG } from './data/defaultData';
-import { Eye, EyeOff, Sparkles, Sliders, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, Sliders, CheckCircle, Command } from 'lucide-react';
 
 const STORAGE_KEY = 'universal_resume_data_v1';
 const TEMPLATE_KEY = 'universal_resume_template_v1';
@@ -49,6 +51,8 @@ export default function App() {
   // Modals
   const [isTemplatesModalOpen, setIsTemplatesModalOpen] = useState(false);
   const [isATSModalOpen, setIsATSModalOpen] = useState(false);
+  const [isCoverLetterOpen, setIsCoverLetterOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState('');
@@ -76,6 +80,30 @@ export default function App() {
       localStorage.setItem('universal_resume_orientation_v1', orientation);
     } catch (e) {}
   }, [orientation]);
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Command / Ctrl + K -> Open Command Palette
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+      // Command / Ctrl + J -> Open ATS Modal
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+        e.preventDefault();
+        setIsATSModalOpen(prev => !prev);
+      }
+      // Command / Ctrl + L -> Open Cover Letter
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        setIsCoverLetterOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Load sample preset
   const handleLoadSample = (sampleData) => {
@@ -177,11 +205,15 @@ export default function App() {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-semibold animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-semibold animate-bounce border border-white/20">
           <CheckCircle className="w-4 h-4" />
           <span>{toastMessage}</span>
         </div>
@@ -195,6 +227,8 @@ export default function App() {
         setSelectedTemplate={setSelectedTemplate}
         onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
         onOpenATSModal={() => setIsATSModalOpen(true)}
+        onOpenCoverLetter={() => setIsCoverLetterOpen(true)}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onLoadSample={handleLoadSample}
         onResetData={handleReset}
         onExportJSON={handleExportJSON}
@@ -202,34 +236,46 @@ export default function App() {
         resumeData={resumeData}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-6">
+      {/* Main Content Area with Ambient Lighting */}
+      <main className="flex-1 max-w-[1680px] w-full mx-auto p-3 sm:p-6 ambient-glow">
         {/* INTERVIEW MODE */}
         {activeMode === 'interview' ? (
           <div className="space-y-6">
             {/* Top Interview Banner & Live Preview Toggle */}
-            <div className="no-print flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl p-3 px-4">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="text-xs font-semibold text-slate-300">
-                  Interactive Interview Active — answers dynamically generate your resume
+            <div className="no-print flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-3.5 px-5 shadow-lg">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-semibold text-slate-200">
+                  Interactive AI Career Consultant Active — responses dynamically generate ATS architecture
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
+                  onClick={() => setIsCommandPaletteOpen(true)}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition-colors border border-slate-700"
+                >
+                  <Command className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Command Center</span>
+                  <kbd className="text-[10px] text-slate-400 font-mono">⌘K</kbd>
+                </button>
+
+                <button
                   onClick={() => setShowLivePreviewInInterview(!showLivePreviewInInterview)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition-colors border border-slate-700"
                 >
                   {showLivePreviewInInterview ? (
                     <>
                       <EyeOff className="w-3.5 h-3.5 text-blue-400" />
-                      <span>Hide Side Preview</span>
+                      <span>Hide Side Canvas</span>
                     </>
                   ) : (
                     <>
                       <Eye className="w-3.5 h-3.5 text-blue-400" />
-                      <span>Show Live Side Preview</span>
+                      <span>Show Live Canvas</span>
                     </>
                   )}
                 </button>
@@ -253,6 +299,7 @@ export default function App() {
                   <ResumePreview
                     resumeData={resumeData}
                     selectedTemplate={selectedTemplate}
+                    setSelectedTemplate={setSelectedTemplate}
                     themeColor={themeColor}
                     setThemeColor={setThemeColor}
                     fontOption={fontOption}
@@ -261,6 +308,8 @@ export default function App() {
                     setPaperSize={setPaperSize}
                     orientation={orientation}
                     setOrientation={setOrientation}
+                    onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
+                    onOpenCoverLetter={() => setIsCoverLetterOpen(true)}
                   />
                 </div>
               )}
@@ -271,7 +320,7 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left Column: Form Editor */}
             <div className="lg:col-span-5 xl:col-span-4 h-[calc(100vh-100px)] overflow-y-auto pr-1 pb-10">
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md p-3 rounded-2xl border border-white/10">
                 <div>
                   <h2 className="text-base font-bold text-white flex items-center gap-2">
                     <Sliders className="w-4 h-4 text-blue-400" />
@@ -281,9 +330,9 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => setActiveMode('interview')}
-                  className="text-xs text-blue-400 hover:text-blue-300 font-semibold"
+                  className="text-xs text-blue-400 hover:text-blue-300 font-semibold px-2.5 py-1 rounded-lg bg-blue-950/40 border border-blue-500/30"
                 >
-                  &larr; Return to Interview
+                  &larr; Interview
                 </button>
               </div>
 
@@ -298,6 +347,7 @@ export default function App() {
               <ResumePreview
                 resumeData={resumeData}
                 selectedTemplate={selectedTemplate}
+                setSelectedTemplate={setSelectedTemplate}
                 themeColor={themeColor}
                 setThemeColor={setThemeColor}
                 fontOption={fontOption}
@@ -306,6 +356,8 @@ export default function App() {
                 setPaperSize={setPaperSize}
                 orientation={orientation}
                 setOrientation={setOrientation}
+                onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
+                onOpenCoverLetter={() => setIsCoverLetterOpen(true)}
               />
             </div>
           </div>
@@ -334,6 +386,31 @@ export default function App() {
           }
           showToast(`Switched format to "${TEMPLATES_CATALOG.find(t => t.id === tplId)?.name}"`);
         }}
+      />
+
+      {/* AI Matching Cover Letter Modal */}
+      <CoverLetterModal
+        isOpen={isCoverLetterOpen}
+        onClose={() => setIsCoverLetterOpen(false)}
+        resumeData={resumeData}
+        themeColor={themeColor}
+      />
+
+      {/* Modern Command Palette Modal (⌘K) */}
+      <CommandPaletteModal
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        activeMode={activeMode}
+        setActiveMode={setActiveMode}
+        selectedTemplate={selectedTemplate}
+        setSelectedTemplate={setSelectedTemplate}
+        onOpenTemplatesModal={() => { setIsCommandPaletteOpen(false); setIsTemplatesModalOpen(true); }}
+        onOpenATSModal={() => { setIsCommandPaletteOpen(false); setIsATSModalOpen(true); }}
+        onOpenCoverLetter={() => { setIsCommandPaletteOpen(false); setIsCoverLetterOpen(true); }}
+        orientation={orientation}
+        setOrientation={setOrientation}
+        onPrint={handlePrint}
+        onExportJSON={handleExportJSON}
       />
     </div>
   );
