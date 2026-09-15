@@ -2,8 +2,9 @@ import React from 'react';
 import { Mail, Phone, MapPin, Globe, ExternalLink, Sparkles, Award } from 'lucide-react';
 import { Linkedin } from '../Icons';
 
-export default function CreativeStudioTemplate({ data, theme, font }) {
+export default function CreativeStudioTemplate({ data, theme, font, orientation = 'portrait' }) {
   const { personal, summary, experience, education, skills, projects, certifications, languages, photo, showPhoto, photoShape } = data;
+  const isLandscape = orientation === 'landscape';
 
   const getPhotoShapeClass = () => {
     if (photoShape === 'circle') return 'rounded-full';
@@ -18,7 +19,7 @@ export default function CreativeStudioTemplate({ data, theme, font }) {
     >
       {/* Sidebar (Left Column) */}
       <aside 
-        className="w-full md:w-5/12 p-6 sm:p-7 text-white flex flex-col justify-between shrink-0"
+        className={`w-full ${isLandscape ? 'md:w-4/12' : 'md:w-5/12'} p-6 sm:p-7 text-white flex flex-col justify-between shrink-0`}
         style={{ backgroundColor: theme.primary }}
       >
         <div>

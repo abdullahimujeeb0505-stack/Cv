@@ -2,8 +2,9 @@ import React from 'react';
 import { Terminal, Globe, Mail, Phone, MapPin, ExternalLink, Code } from 'lucide-react';
 import { Linkedin, Github } from '../Icons';
 
-export default function TechTerminalTemplate({ data, theme, font }) {
+export default function TechTerminalTemplate({ data, theme, font, orientation = 'portrait' }) {
   const { personal, summary, experience, education, skills, projects, certifications, languages, photo, showPhoto, photoShape } = data;
+  const isLandscape = orientation === 'landscape';
 
   const getPhotoShapeClass = () => {
     if (photoShape === 'circle') return 'rounded-full';

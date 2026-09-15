@@ -2,8 +2,9 @@ import React from 'react';
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import { Linkedin } from '../Icons';
 
-export default function ExecutiveIvyTemplate({ data, theme, font }) {
+export default function ExecutiveIvyTemplate({ data, theme, font, orientation = 'portrait' }) {
   const { personal, summary, experience, education, skills, projects, certifications, languages, photo, showPhoto, photoShape } = data;
+  const isLandscape = orientation === 'landscape';
 
   const getPhotoShapeClass = () => {
     if (photoShape === 'circle') return 'rounded-full';
@@ -86,116 +87,122 @@ export default function ExecutiveIvyTemplate({ data, theme, font }) {
         </section>
       )}
 
-      {/* Executive Experience */}
-      {experience && experience.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-center border-b pb-1 mb-3" style={{ borderColor: theme.border, color: theme.primary }}>
-            Professional Leadership History
-          </h2>
-          <div className="space-y-4">
-            {experience.map((item) => (
-              <div key={item.id} className="text-xs sm:text-sm">
-                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-bold text-slate-900">
-                  <div className="text-sm text-slate-950 font-serif">
-                    {item.company} <span className="font-normal text-slate-600 font-sans">| {item.location}</span>
+      {/* Main Sections: Responsive Grid if Landscape */}
+      <div className={isLandscape ? 'grid grid-cols-2 gap-8' : 'space-y-5'}>
+        {/* Executive Experience */}
+        {experience && experience.length > 0 && (
+          <section className="mb-5">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-center border-b pb-1 mb-3" style={{ borderColor: theme.border, color: theme.primary }}>
+              Professional Leadership History
+            </h2>
+            <div className="space-y-4">
+              {experience.map((item) => (
+                <div key={item.id} className="text-xs sm:text-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between font-bold text-slate-900">
+                    <div className="text-sm text-slate-950 font-serif">
+                      {item.company} <span className="font-normal text-slate-600 font-sans">| {item.location}</span>
+                    </div>
+                    <div className="text-xs text-slate-600 font-sans italic">
+                      {item.startDate} – {item.current ? 'Present' : item.endDate}
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-600 font-sans italic">
-                    {item.startDate} – {item.current ? 'Present' : item.endDate}
+                  <div className="font-semibold text-xs text-slate-800 italic mt-0.5" style={{ color: theme.secondary }}>
+                    {item.title}
                   </div>
+                  {item.highlights && item.highlights.length > 0 && (
+                    <ul className="mt-1.5 list-disc list-outside pl-4 space-y-1 text-xs text-slate-700 leading-normal">
+                      {item.highlights.filter(Boolean).map((bullet, idx) => (
+                        <li key={idx}>
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-                <div className="font-semibold text-xs text-slate-800 italic mt-0.5" style={{ color: theme.secondary }}>
-                  {item.title}
-                </div>
-                {item.highlights && item.highlights.length > 0 && (
-                  <ul className="mt-1.5 list-disc list-outside pl-4 space-y-1 text-xs text-slate-700 leading-normal">
-                    {item.highlights.filter(Boolean).map((bullet, idx) => (
-                      <li key={idx}>
-                        {bullet}
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Right / Secondary Side */}
+        <div className="space-y-5">
+          {/* Core Competencies */}
+          {skills && skills.length > 0 && (
+            <section className="mb-5">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-center border-b pb-1 mb-2.5" style={{ borderColor: theme.border, color: theme.primary }}>
+                Core Competencies & Governance
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
+                {skills.map((group, idx) => (
+                  <div key={idx} className="flex flex-col">
+                    <span className="font-bold text-slate-900 border-b border-slate-100 pb-0.5 mb-1">{group.category}</span>
+                    <span className="text-slate-700 font-sans text-[11px] leading-relaxed">
+                      {Array.isArray(group.items) ? group.items.join(' • ') : group.items}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Education & Credentials */}
+          {education && education.length > 0 && (
+            <section className="mb-5">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-center border-b pb-1 mb-2.5" style={{ borderColor: theme.border, color: theme.primary }}>
+                Education & Executive Credentials
+              </h2>
+              <div className="space-y-2">
+                {education.map((edu) => (
+                  <div key={edu.id} className="text-xs">
+                    <div className="flex justify-between font-bold text-slate-900">
+                      <span>{edu.school} — {edu.degree}</span>
+                      <span className="font-sans text-slate-600 font-normal text-[11px]">{edu.gradYear}</span>
+                    </div>
+                    {edu.details && <p className="text-slate-600 italic text-[11px] mt-0.5">{edu.details}</p>}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Certifications and Languages */}
+          {((certifications && certifications.length > 0) || (languages && languages.length > 0)) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1 text-xs">
+              {certifications && certifications.length > 0 && (
+                <div>
+                  <h3 className="font-bold uppercase tracking-wider text-[11px] border-b pb-0.5 mb-1.5" style={{ color: theme.primary }}>
+                    Certifications & Boards
+                  </h3>
+                  <ul className="space-y-1 text-slate-700 text-[11px]">
+                    {certifications.map((c) => (
+                      <li key={c.id} className="flex justify-between">
+                        <span className="font-semibold text-slate-900">{c.name}</span>
+                        <span className="text-slate-500">{c.year}</span>
                       </li>
                     ))}
                   </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Core Competencies */}
-      {skills && skills.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-center border-b pb-1 mb-2.5" style={{ borderColor: theme.border, color: theme.primary }}>
-            Core Competencies & Governance
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
-            {skills.map((group, idx) => (
-              <div key={idx} className="flex flex-col">
-                <span className="font-bold text-slate-900 border-b border-slate-100 pb-0.5 mb-1">{group.category}</span>
-                <span className="text-slate-700 font-sans text-[11px] leading-relaxed">
-                  {Array.isArray(group.items) ? group.items.join(' • ') : group.items}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Education & Credentials */}
-      {education && education.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-center border-b pb-1 mb-2.5" style={{ borderColor: theme.border, color: theme.primary }}>
-            Education & Executive Credentials
-          </h2>
-          <div className="space-y-2">
-            {education.map((edu) => (
-              <div key={edu.id} className="text-xs">
-                <div className="flex justify-between font-bold text-slate-900">
-                  <span>{edu.school} — {edu.degree}</span>
-                  <span className="font-sans text-slate-600 font-normal text-[11px]">{edu.gradYear}</span>
                 </div>
-                {edu.details && <p className="text-slate-600 italic text-[11px] mt-0.5">{edu.details}</p>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              )}
 
-      {/* Certifications and Languages */}
-      {((certifications && certifications.length > 0) || (languages && languages.length > 0)) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1 text-xs">
-          {certifications && certifications.length > 0 && (
-            <div>
-              <h3 className="font-bold uppercase tracking-wider text-[11px] border-b pb-0.5 mb-1.5" style={{ color: theme.primary }}>
-                Certifications & Boards
-              </h3>
-              <ul className="space-y-1 text-slate-700 text-[11px]">
-                {certifications.map((c) => (
-                  <li key={c.id} className="flex justify-between">
-                    <span className="font-semibold text-slate-900">{c.name}</span>
-                    <span className="text-slate-500">{c.year}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {languages && languages.length > 0 && (
-            <div>
-              <h3 className="font-bold uppercase tracking-wider text-[11px] border-b pb-0.5 mb-1.5" style={{ color: theme.primary }}>
-                Languages
-              </h3>
-              <ul className="space-y-1 text-slate-700 text-[11px]">
-                {languages.map((l, idx) => (
-                  <li key={idx} className="flex justify-between">
-                    <span className="font-semibold text-slate-900">{l.language}</span>
-                    <span className="text-slate-500">{l.proficiency}</span>
-                  </li>
-                ))}
-              </ul>
+              {languages && languages.length > 0 && (
+                <div>
+                  <h3 className="font-bold uppercase tracking-wider text-[11px] border-b pb-0.5 mb-1.5" style={{ color: theme.primary }}>
+                    Languages
+                  </h3>
+                  <ul className="space-y-1 text-slate-700 text-[11px]">
+                    {languages.map((l, idx) => (
+                      <li key={idx} className="flex justify-between">
+                        <span className="font-semibold text-slate-900">{l.language}</span>
+                        <span className="text-slate-500">{l.proficiency}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

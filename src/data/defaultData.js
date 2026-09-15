@@ -453,10 +453,13 @@ export const TEMPLATES_CATALOG = [
   {
     id: 'modern-ats',
     name: 'Modern ATS Pro',
+    category: 'ats',
     tagline: 'Clean, Single-Column, 100% Robot & Recruiter Tested',
     recommendedFor: 'Tech, Software Engineering, IT, Finance, Corporate Roles',
     accentColor: '#2563eb',
     previewType: 'single-column',
+    atsScoreGuarantee: '100%',
+    supportsLandscape: true,
     bestMatchCriteria: {
       industries: ['tech', 'engineering', 'finance', 'healthcare'],
       regions: ['us', 'ca', 'uk'],
@@ -470,10 +473,13 @@ export const TEMPLATES_CATALOG = [
   {
     id: 'executive-ivy',
     name: 'Executive Ivy / Wall Street',
+    category: 'executive',
     tagline: 'Authoritative, Classic Serif, Harvard & Law Standard',
     recommendedFor: 'Executive, Directors, VP, Finance, Legal, Consulting, Strategy',
     accentColor: '#1e293b',
     previewType: 'ivy-serif',
+    atsScoreGuarantee: '98%',
+    supportsLandscape: true,
     bestMatchCriteria: {
       industries: ['executive', 'finance', 'consulting', 'legal', 'operations'],
       levels: ['senior', 'executive'],
@@ -487,10 +493,13 @@ export const TEMPLATES_CATALOG = [
   {
     id: 'creative-studio',
     name: 'Creative Studio & Dynamic',
+    category: 'creative',
     tagline: 'Modern Asymmetrical 2-Column with Visual Balance',
     recommendedFor: 'UI/UX, Product Design, Marketing, Branding, Creative Directors',
     accentColor: '#7c3aed',
     previewType: 'two-column-sidebar',
+    atsScoreGuarantee: '92%',
+    supportsLandscape: true,
     bestMatchCriteria: {
       industries: ['creative', 'design', 'marketing', 'media', 'product'],
       reasons: [
@@ -503,10 +512,13 @@ export const TEMPLATES_CATALOG = [
   {
     id: 'minimalist-nordic',
     name: 'Minimalist Nordic',
+    category: 'ats',
     tagline: 'Refined Whitespace, Modern Clean Lines & Focus',
     recommendedFor: 'Early Career, Students, Career Switchers, Generalist Roles',
     accentColor: '#059669',
     previewType: 'minimal',
+    atsScoreGuarantee: '99%',
+    supportsLandscape: true,
     bestMatchCriteria: {
       industries: ['student', 'general', 'nonprofit', 'education'],
       levels: ['student', 'entry'],
@@ -520,10 +532,13 @@ export const TEMPLATES_CATALOG = [
   {
     id: 'tech-terminal',
     name: 'Tech Terminal / Silicon',
+    category: 'tech',
     tagline: 'Monospace Accents, Code-Inspired, Project-Forward',
     recommendedFor: 'DevOps, Backend Engineers, Cybersecurity, Data Scientists, Web3',
     accentColor: '#0284c7',
     previewType: 'terminal',
+    atsScoreGuarantee: '96%',
+    supportsLandscape: true,
     bestMatchCriteria: {
       industries: ['tech', 'cybersecurity', 'devops', 'data'],
       reasons: [
@@ -536,10 +551,13 @@ export const TEMPLATES_CATALOG = [
   {
     id: 'international-europass',
     name: 'International Europass / Compact',
+    category: 'specialized',
     tagline: 'Structured 2-Column, Photo-Friendly, Multi-Lingual CEFR',
     recommendedFor: 'European Union, International Expat, Global Supply Chain, Multilingual',
     accentColor: '#0d9488',
     previewType: 'europass',
+    atsScoreGuarantee: '94%',
+    supportsLandscape: true,
     bestMatchCriteria: {
       regions: ['eu', 'asia', 'latam', 'global'],
       industries: ['international', 'logistics', 'hospitality', 'academia'],
@@ -547,6 +565,310 @@ export const TEMPLATES_CATALOG = [
         'Complies with European and global recruiting conventions where professional headshots and languages are standard.',
         'Includes dedicated CEFR language proficiency ratings (Native, C1, B2).',
         'Structured two-column division provides clear compartmentalization of global credentials.'
+      ]
+    }
+  },
+  {
+    id: 'compact-one-page',
+    name: 'Compact One-Pager',
+    category: 'ats',
+    tagline: 'High Information Density, Zero Wasted Space, Fast Scan',
+    recommendedFor: 'Software Engineers, Technical PMs, Analysts wanting a strict single-page CV',
+    accentColor: '#3b82f6',
+    previewType: 'compact',
+    atsScoreGuarantee: '100%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['tech', 'engineering', 'finance', 'operations'],
+      reasons: [
+        'Micro-spaced geometry fits up to 10 years of experience on one pristine sheet.',
+        'Categorized inline skill pills allow immediate technical evaluation.',
+        'Tested with Workday and Greenhouse for flawless single-page parsing.'
+      ]
+    }
+  },
+  {
+    id: 'stanford-academic',
+    name: 'Stanford Academic CV',
+    category: 'academic',
+    tagline: 'Classical Latinate CV for Faculty, Research, and PhD Fellows',
+    recommendedFor: 'Academia, Postdocs, Research Scientists, Medical Faculty, Grant Seekers',
+    accentColor: '#991b1b',
+    previewType: 'academic',
+    atsScoreGuarantee: '98%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['academia', 'education', 'healthcare', 'science'],
+      reasons: [
+        'Positions Education and Appointments before standard corporate employment.',
+        'Dedicated sections for Publications, Grants, and Research Fellowships.',
+        'Traditional academic serif layout adhering to North American and European university standards.'
+      ]
+    }
+  },
+  {
+    id: 'infographic-metrics',
+    name: 'Infographic & Metrics',
+    category: 'creative',
+    tagline: 'High-Impact KPI Stat Cards & Visual Progression Callouts',
+    recommendedFor: 'Growth Marketers, Sales Directors, Product Managers, Venture Founders',
+    accentColor: '#4f46e5',
+    previewType: 'infographic',
+    atsScoreGuarantee: '90%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['marketing', 'sales', 'growth', 'product'],
+      reasons: [
+        'Top summary metric cards showcase quantifiable business results instantly.',
+        'Visually distinct achievement badges command recruiter attention.',
+        'Balances strong data visualization with structured chronological detail.'
+      ]
+    }
+  },
+  {
+    id: 'elegant-vogue',
+    name: 'Elegant Vogue / Editorial',
+    category: 'creative',
+    tagline: 'Haute Editorial Layout, Delicate Serif, Generous Border',
+    recommendedFor: 'Fashion Directors, Luxury Brands, Architects, Curators, Journalists',
+    accentColor: '#18181b',
+    previewType: 'editorial',
+    atsScoreGuarantee: '88%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['creative', 'fashion', 'media', 'arts'],
+      reasons: [
+        'High-contrast luxury editorial look inspired by European art monographs.',
+        'Delicate typographic rhythm and generous framing signal refined taste.',
+        'Ideal for roles where aesthetic presentation is an implicit qualification.'
+      ]
+    }
+  },
+  {
+    id: 'silicon-startup',
+    name: 'Silicon Valley Startup',
+    category: 'tech',
+    tagline: 'YC Founder & Early Engineer Framing, "Shipped & Impact" Focus',
+    recommendedFor: 'Founders, Full-Stack Engineers, AI Specialists, Seed/Series-A Talent',
+    accentColor: '#10b981',
+    previewType: 'startup',
+    atsScoreGuarantee: '96%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['tech', 'startups', 'crypto', 'ai'],
+      reasons: [
+        'Highlights live deployed applications and open-source repositories.',
+        'Emphasizes speed of shipping, product ownership, and quantifiable scaling metrics.',
+        'Modern tech tag chips and rapid-read bullet styling.'
+      ]
+    }
+  },
+  {
+    id: 'medical-clinical',
+    name: 'Medical & Clinical Pro',
+    category: 'specialized',
+    tagline: 'Clinical Rotations, Board Accreditations & Hospital Hierarchy',
+    recommendedFor: 'Physicians, Surgeons, Registered Nurses, Pharmacists, Clinical Researchers',
+    accentColor: '#0284c7',
+    previewType: 'clinical',
+    atsScoreGuarantee: '97%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['healthcare', 'medicine', 'nursing', 'biotech'],
+      reasons: [
+        'Highlights State Licensure and Board Certifications prominently at the top.',
+        'Delineates Hospital Affiliations, Clinical Fellowships, and Patient Care outcomes.',
+        'Clean professional structure adhering to hospital credentialing board expectations.'
+      ]
+    }
+  },
+  {
+    id: 'legal-juris',
+    name: 'Legal Juris Doctor',
+    category: 'specialized',
+    tagline: 'Bar Admissions, Litigation Honors, Formal Stately Serif',
+    recommendedFor: 'Attorneys, General Counsel, Judicial Clerks, Legal Directors, Paralegals',
+    accentColor: '#0f172a',
+    previewType: 'legal',
+    atsScoreGuarantee: '99%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['legal', 'compliance', 'government', 'consulting'],
+      reasons: [
+        'Features Bar Admissions & Jurisdictions prominently in a dedicated authority strip.',
+        'Formal serif typography standard across Am Law 100 firms and judicial chambers.',
+        'Organizes representative matters, trial results, and legal honors.'
+      ]
+    }
+  },
+  {
+    id: 'hybrid-functional',
+    name: 'Hybrid Functional',
+    category: 'ats',
+    tagline: 'Skills-Centric Competency Domains with Chronological Backing',
+    recommendedFor: 'Career Changers, Consultants, Returners, Cross-Disciplinary Roles',
+    accentColor: '#4338ca',
+    previewType: 'functional',
+    atsScoreGuarantee: '95%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['consulting', 'general', 'operations', 'tech'],
+      reasons: [
+        'Groups career highlights under Core Capability Domains rather than job dates.',
+        'Minimizes career transition gaps while demonstrating transferable expertise.',
+        'Retains a secondary chronological job history to pass automated ATS filters.'
+      ]
+    }
+  },
+  {
+    id: 'dark-executive',
+    name: 'Dark Mode Executive',
+    category: 'executive',
+    tagline: 'Slate Charcoal Canvas, Luminous Accents, High Contrast',
+    recommendedFor: 'Tech Executives, Web3 Leaders, VCs, Creative Technologists',
+    accentColor: '#38bdf8',
+    previewType: 'dark',
+    atsScoreGuarantee: '90%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['tech', 'executive', 'crypto', 'design'],
+      reasons: [
+        'Striking slate-dark aesthetic that stands out instantly on recruiter screens.',
+        'Luminous cyan/blue accent markers draw attention to strategic milestones.',
+        'Includes smart print CSS that inverts or prints cleanly on physical paper.'
+      ]
+    }
+  },
+  {
+    id: 'bold-headline',
+    name: 'Bold Headline / Marketing',
+    category: 'creative',
+    tagline: 'Full-Width Hero Header with High-Impact Value Proposition',
+    recommendedFor: 'CMOs, Brand Strategists, Creative Leads, Public Relations, Sales VP',
+    accentColor: '#6366f1',
+    previewType: 'headline',
+    atsScoreGuarantee: '92%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['marketing', 'advertising', 'media', 'creative'],
+      reasons: [
+        'Full-width vibrant hero header establishes immediate authority and identity.',
+        'Designed specifically around brand value proposition statements.',
+        'High visual impact ideal for client-facing and marketing leadership roles.'
+      ]
+    }
+  },
+  {
+    id: 'sidebar-accent',
+    name: 'Sidebar Accent',
+    category: 'creative',
+    tagline: 'Colored Vertical Pillar for Quick Facts, Clean Body for Roles',
+    recommendedFor: 'Full-Stack Developers, Product Owners, Operations Directors',
+    accentColor: '#0284c7',
+    previewType: 'sidebar',
+    atsScoreGuarantee: '93%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['tech', 'operations', 'creative'],
+      reasons: [
+        'Colored left sidebar organizes contact details, skills, and education cleanly.',
+        'Gives the main experience section room to present detailed accomplishments.',
+        'Maintains strong balance between personal branding and data density.'
+      ]
+    }
+  },
+  {
+    id: 'timeline-journey',
+    name: 'Timeline Journey',
+    category: 'ats',
+    tagline: 'Visual Vertical Track with Milestone Nodes and Chronology',
+    recommendedFor: 'Tenured Professionals, Senior Specialists, Progressive Promotions',
+    accentColor: '#2563eb',
+    previewType: 'timeline',
+    atsScoreGuarantee: '95%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['tech', 'management', 'engineering'],
+      reasons: [
+        'Connected chronological timeline illustrates clear upward career trajectory.',
+        'Milestone node markers highlight role transitions and promotions within companies.',
+        'Combines visual storytelling with clean ATS-readable text hierarchy.'
+      ]
+    }
+  },
+  {
+    id: 'grid-portfolio',
+    name: 'Grid Portfolio',
+    category: 'tech',
+    tagline: 'Projects-First Architecture with Card Grid & Stack Badges',
+    recommendedFor: 'Frontend Engineers, UX/UI Designers, Mobile Devs, Makers',
+    accentColor: '#7c3aed',
+    previewType: 'grid',
+    atsScoreGuarantee: '94%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['tech', 'design', 'engineering'],
+      reasons: [
+        'Elevates Projects and Case Studies above traditional chronological experience.',
+        'Card grid structure highlights project architecture, live links, and outcomes.',
+        'Perfect for developers with significant open-source or freelance portfolios.'
+      ]
+    }
+  },
+  {
+    id: 'clean-corporate',
+    name: 'Clean Corporate',
+    category: 'executive',
+    tagline: 'Enterprise Traditional, Structured Dividers, Board-Approved',
+    recommendedFor: 'Fortune 500 Management, Operations, Banking, Human Resources',
+    accentColor: '#334155',
+    previewType: 'corporate',
+    atsScoreGuarantee: '99%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['corporate', 'finance', 'operations', 'hr'],
+      reasons: [
+        'Refined corporate structure meeting standard Fortune 500 HR requirements.',
+        'Clean horizontal dividers create immediate visual rhythm.',
+        'Universal compatibility across all applicant tracking systems and human reviewers.'
+      ]
+    }
+  },
+  {
+    id: 'swiss-international',
+    name: 'Swiss International',
+    category: 'creative',
+    tagline: 'Bauhaus-Inspired Typographic Grid, Asymmetric Numerical Index',
+    recommendedFor: 'Designers, Information Architects, Strategists, European Agencies',
+    accentColor: '#000000',
+    previewType: 'swiss',
+    atsScoreGuarantee: '95%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['design', 'architecture', 'strategy', 'media'],
+      reasons: [
+        'Asymmetrical modular grid based on legendary Swiss graphic design principles.',
+        'Numbered section indices ([01] Profile, [02] Experience) provide clean structure.',
+        'High typographic contrast and rigorous alignment make every word memorable.'
+      ]
+    }
+  },
+  {
+    id: 'landscape-executive-slide',
+    name: 'Landscape Executive Slide',
+    category: 'landscape',
+    tagline: 'Full 16:9 Landscape Widescreen Presentation Dashboard',
+    recommendedFor: 'C-Suite, Board Directors, Executive Pitch Decks, Portfolio Reviews',
+    accentColor: '#1d4ed8',
+    previewType: 'landscape-slide',
+    atsScoreGuarantee: '96%',
+    supportsLandscape: true,
+    bestMatchCriteria: {
+      industries: ['executive', 'board', 'consulting', 'strategy'],
+      reasons: [
+        'Native 11x8.5 / A4-Landscape presentation slide format.',
+        '3-Column executive dashboard layout built for horizontal widescreen display.',
+        'Designed specifically for executive briefings, Zoom screen sharing, and board presentations.'
       ]
     }
   }

@@ -1,14 +1,34 @@
 import React, { useRef, useState } from 'react';
 import { 
   Printer, Download, ZoomIn, ZoomOut, Maximize2, 
-  Palette, Type, FileText, Check, Copy
+  Palette, Type, FileText, Check, Copy, Compass, 
+  Square, RectangleHorizontal, Layout
 } from 'lucide-react';
+
+// Import All 22 Universal Resume Templates
 import ModernATSTemplate from './templates/ModernATSTemplate';
 import ExecutiveIvyTemplate from './templates/ExecutiveIvyTemplate';
 import CreativeStudioTemplate from './templates/CreativeStudioTemplate';
 import MinimalistNordicTemplate from './templates/MinimalistNordicTemplate';
 import TechTerminalTemplate from './templates/TechTerminalTemplate';
 import InternationalEuropassTemplate from './templates/InternationalEuropassTemplate';
+import CompactOnePageTemplate from './templates/CompactOnePageTemplate';
+import StanfordAcademicTemplate from './templates/StanfordAcademicTemplate';
+import InfographicMetricsTemplate from './templates/InfographicMetricsTemplate';
+import ElegantVogueTemplate from './templates/ElegantVogueTemplate';
+import SiliconStartupTemplate from './templates/SiliconStartupTemplate';
+import MedicalClinicalTemplate from './templates/MedicalClinicalTemplate';
+import LegalJurisTemplate from './templates/LegalJurisTemplate';
+import HybridFunctionalTemplate from './templates/HybridFunctionalTemplate';
+import DarkModeExecutiveTemplate from './templates/DarkModeExecutiveTemplate';
+import BoldHeadlineTemplate from './templates/BoldHeadlineTemplate';
+import SidebarAccentTemplate from './templates/SidebarAccentTemplate';
+import TimelineJourneyTemplate from './templates/TimelineJourneyTemplate';
+import GridPortfolioTemplate from './templates/GridPortfolioTemplate';
+import CleanCorporateTemplate from './templates/CleanCorporateTemplate';
+import SwissInternationalTemplate from './templates/SwissInternationalTemplate';
+import LandscapeExecutiveSlideTemplate from './templates/LandscapeExecutiveSlideTemplate';
+
 import { COLOR_THEMES, FONT_OPTIONS } from '../data/defaultData';
 
 export default function ResumePreview({
@@ -19,7 +39,9 @@ export default function ResumePreview({
   fontOption,
   setFontOption,
   paperSize,
-  setPaperSize
+  setPaperSize,
+  orientation = 'portrait',
+  setOrientation
 }) {
   const [zoomLevel, setZoomLevel] = useState(85);
   const [copied, setCopied] = useState(false);
@@ -28,7 +50,17 @@ export default function ResumePreview({
   const currentTheme = COLOR_THEMES.find(t => t.id === themeColor) || COLOR_THEMES[0];
   const currentFont = FONT_OPTIONS.find(f => f.id === fontOption) || FONT_OPTIONS[0];
 
+  const isLandscape = orientation === 'landscape';
+
   const handlePrint = () => {
+    // Dynamic print style for orientation
+    const printStyle = document.createElement('style');
+    printStyle.id = 'dynamic-print-page-style';
+    printStyle.innerHTML = `@page { size: ${paperSize === 'a4' ? 'A4' : 'letter'} ${orientation}; margin: 8mm; }`;
+    const old = document.getElementById('dynamic-print-page-style');
+    if (old) old.remove();
+    document.head.appendChild(printStyle);
+
     window.print();
   };
 
@@ -53,7 +85,7 @@ export default function ResumePreview({
   };
 
   const renderTemplate = () => {
-    const props = { data: resumeData, theme: currentTheme, font: currentFont };
+    const props = { data: resumeData, theme: currentTheme, font: currentFont, orientation };
     switch (selectedTemplate) {
       case 'modern-ats':
         return <ModernATSTemplate {...props} />;
@@ -67,16 +99,57 @@ export default function ResumePreview({
         return <TechTerminalTemplate {...props} />;
       case 'international-europass':
         return <InternationalEuropassTemplate {...props} />;
+      case 'compact-one-page':
+        return <CompactOnePageTemplate {...props} />;
+      case 'stanford-academic':
+        return <StanfordAcademicTemplate {...props} />;
+      case 'infographic-metrics':
+        return <InfographicMetricsTemplate {...props} />;
+      case 'elegant-vogue':
+        return <ElegantVogueTemplate {...props} />;
+      case 'silicon-startup':
+        return <SiliconStartupTemplate {...props} />;
+      case 'medical-clinical':
+        return <MedicalClinicalTemplate {...props} />;
+      case 'legal-juris':
+        return <LegalJurisTemplate {...props} />;
+      case 'hybrid-functional':
+        return <HybridFunctionalTemplate {...props} />;
+      case 'dark-executive':
+        return <DarkModeExecutiveTemplate {...props} />;
+      case 'bold-headline':
+        return <BoldHeadlineTemplate {...props} />;
+      case 'sidebar-accent':
+        return <SidebarAccentTemplate {...props} />;
+      case 'timeline-journey':
+        return <TimelineJourneyTemplate {...props} />;
+      case 'grid-portfolio':
+        return <GridPortfolioTemplate {...props} />;
+      case 'clean-corporate':
+        return <CleanCorporateTemplate {...props} />;
+      case 'swiss-international':
+        return <SwissInternationalTemplate {...props} />;
+      case 'landscape-executive-slide':
+        return <LandscapeExecutiveSlideTemplate {...props} />;
       default:
         return <ModernATSTemplate {...props} />;
     }
   };
 
+  // Dimensions based on Paper Size & Orientation
+  const paperWidth = paperSize === 'a4' 
+    ? (isLandscape ? '297mm' : '210mm') 
+    : (isLandscape ? '11in' : '8.5in');
+
+  const paperMinHeight = paperSize === 'a4' 
+    ? (isLandscape ? '210mm' : '297mm') 
+    : (isLandscape ? '8.5in' : '11in');
+
   return (
     <div className="flex flex-col h-full">
       {/* Top Controls Toolbar (Hidden when printing) */}
       <div className="no-print bg-slate-800/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-3 mb-4 flex flex-wrap items-center justify-between gap-3 shadow-md">
-        {/* Left: Styling Controls (Colors & Fonts) */}
+        {/* Left: Styling Controls (Colors, Fonts, Orientation & Paper) */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Color palette */}
           <div className="flex items-center gap-1.5">
@@ -117,15 +190,46 @@ export default function ResumePreview({
 
           <div className="h-4 w-px bg-slate-700 hidden sm:block"></div>
 
+          {/* Orientation Toggle: Portrait vs Landscape */}
+          <div className="flex items-center gap-1 text-xs">
+            <span className="text-[11px] text-slate-400">Layout:</span>
+            <button
+              onClick={() => setOrientation && setOrientation('portrait')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                orientation === 'portrait'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+              }`}
+              title="Portrait Orientation (Standard Vertical)"
+            >
+              <FileText className="w-3 h-3" />
+              <span>Portrait</span>
+            </button>
+            <button
+              onClick={() => setOrientation && setOrientation('landscape')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                orientation === 'landscape'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+              }`}
+              title="Landscape Orientation (Widescreen 11x8.5 Slide)"
+            >
+              <RectangleHorizontal className="w-3.5 h-3.5" />
+              <span>Landscape</span>
+            </button>
+          </div>
+
+          <div className="h-4 w-px bg-slate-700 hidden sm:block"></div>
+
           {/* Paper format */}
           <div className="flex items-center gap-1 text-xs">
-            <span className="text-[11px] text-slate-400">Paper:</span>
+            <span className="text-[11px] text-slate-400">Size:</span>
             {['letter', 'a4'].map(size => (
               <button
                 key={size}
                 onClick={() => setPaperSize(size)}
                 className={`px-2 py-0.5 rounded text-[11px] uppercase font-bold transition-colors ${
-                  paperSize === size ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+                  paperSize === size ? 'bg-slate-700 text-white border border-slate-600' : 'bg-slate-900 text-slate-400 hover:text-slate-200'
                 }`}
               >
                 {size}
@@ -156,9 +260,9 @@ export default function ResumePreview({
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => setZoomLevel(85)}
+              onClick={() => setZoomLevel(isLandscape ? 75 : 85)}
               className="p-1 text-slate-400 hover:text-white border-l border-slate-800 ml-0.5"
-              title="Reset Zoom (85%)"
+              title="Reset Zoom"
             >
               <Maximize2 className="w-3.5 h-3.5" />
             </button>
@@ -180,7 +284,7 @@ export default function ResumePreview({
             className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print / PDF</span>
+            <span>Print / PDF ({isLandscape ? 'Landscape' : 'Portrait'})</span>
           </button>
         </div>
       </div>
@@ -197,8 +301,8 @@ export default function ResumePreview({
             id="printable-resume"
             className="resume-paper bg-white text-slate-900 shadow-2xl rounded-sm transition-all duration-150 overflow-hidden"
             style={{
-              width: paperSize === 'a4' ? '210mm' : '8.5in',
-              minHeight: paperSize === 'a4' ? '297mm' : '11in',
+              width: paperWidth,
+              minHeight: paperMinHeight,
               maxWidth: '100%'
             }}
           >

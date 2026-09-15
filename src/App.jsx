@@ -34,6 +34,13 @@ export default function App() {
   const [themeColor, setThemeColor] = useState('blue');
   const [fontOption, setFontOption] = useState('sans');
   const [paperSize, setPaperSize] = useState('letter');
+  const [orientation, setOrientation] = useState(() => {
+    try {
+      const savedOr = localStorage.getItem('universal_resume_orientation_v1');
+      if (savedOr) return savedOr;
+    } catch (e) {}
+    return 'portrait';
+  });
 
   const [activeMode, setActiveMode] = useState('interview'); // 'interview' | 'editor'
   const [showLivePreviewInInterview, setShowLivePreviewInInterview] = useState(true);
@@ -62,6 +69,12 @@ export default function App() {
       localStorage.setItem(TEMPLATE_KEY, selectedTemplate);
     } catch (e) {}
   }, [selectedTemplate]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('universal_resume_orientation_v1', orientation);
+    } catch (e) {}
+  }, [orientation]);
 
   // Load sample preset
   const handleLoadSample = (sampleData) => {
@@ -245,6 +258,8 @@ export default function App() {
                     setFontOption={setFontOption}
                     paperSize={paperSize}
                     setPaperSize={setPaperSize}
+                    orientation={orientation}
+                    setOrientation={setOrientation}
                   />
                 </div>
               )}
@@ -288,6 +303,8 @@ export default function App() {
                 setFontOption={setFontOption}
                 paperSize={paperSize}
                 setPaperSize={setPaperSize}
+                orientation={orientation}
+                setOrientation={setOrientation}
               />
             </div>
           </div>
@@ -308,6 +325,9 @@ export default function App() {
         selectedTemplate={selectedTemplate}
         onSelectTemplate={(tplId) => {
           setSelectedTemplate(tplId);
+          if (tplId === 'landscape-executive-slide') {
+            setOrientation('landscape');
+          }
           showToast(`Switched format to "${TEMPLATES_CATALOG.find(t => t.id === tplId)?.name}"`);
         }}
       />

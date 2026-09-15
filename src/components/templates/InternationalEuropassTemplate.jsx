@@ -2,8 +2,9 @@ import React from 'react';
 import { Mail, Phone, MapPin, Globe, CheckCircle2 } from 'lucide-react';
 import { Linkedin } from '../Icons';
 
-export default function InternationalEuropassTemplate({ data, theme, font }) {
+export default function InternationalEuropassTemplate({ data, theme, font, orientation = 'portrait' }) {
   const { personal, summary, experience, education, skills, projects, certifications, languages, photo, showPhoto, photoShape } = data;
+  const isLandscape = orientation === 'landscape';
 
   const getPhotoShapeClass = () => {
     if (photoShape === 'circle') return 'rounded-full';

@@ -698,21 +698,19 @@ export default function InterviewWizard({
 
             {/* Template Selector Pill */}
             <div className="mt-4 pt-3 border-t border-slate-700/80 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-slate-400">Selected template for your resume:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {TEMPLATES_CATALOG.map(tpl => (
-                  <button
-                    key={tpl.id}
-                    onClick={() => setSelectedTemplate(tpl.id)}
-                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
-                      selectedTemplate === tpl.id 
-                        ? 'bg-blue-600 text-white shadow' 
-                        : 'bg-slate-700/60 text-slate-300 hover:bg-slate-700'
-                    }`}
-                  >
-                    {tpl.name}
-                  </button>
-                ))}
+              <span className="text-xs text-slate-400">Selected architecture for your resume:</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={selectedTemplate}
+                  onChange={(e) => setSelectedTemplate(e.target.value)}
+                  className="bg-slate-800 border border-slate-600 text-slate-100 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue-500 font-semibold shadow-sm"
+                >
+                  {TEMPLATES_CATALOG.map(tpl => (
+                    <option key={tpl.id} value={tpl.id}>
+                      {tpl.name} — {tpl.tagline.slice(0, 40)}...
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
