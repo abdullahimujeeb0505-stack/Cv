@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import InterviewWizard from './components/InterviewWizard';
 import FormEditor from './components/FormEditor';
 import ResumePreview from './components/ResumePreview';
+import Footer from './components/Footer';
 import ATSScoreModal from './components/ATSScoreModal';
 import TemplateCatalogModal from './components/TemplateCatalogModal';
 import { SAMPLE_PROFILES, TEMPLATES_CATALOG } from './data/defaultData';
@@ -310,6 +311,9 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Standard Application Footer */}
+      <Footer />
 
       {/* ATS Compatibility Modal */}
       <ATSScoreModal
