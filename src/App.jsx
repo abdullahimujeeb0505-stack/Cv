@@ -8,8 +8,14 @@ import ATSScoreModal from './components/ATSScoreModal';
 import TemplateCatalogModal from './components/TemplateCatalogModal';
 import CoverLetterModal from './components/CoverLetterModal';
 import CommandPaletteModal from './components/CommandPaletteModal';
+import JobMatcherModal from './components/JobMatcherModal';
+import BulletPolishModal from './components/BulletPolishModal';
 import { SAMPLE_PROFILES, TEMPLATES_CATALOG } from './data/defaultData';
-import { Eye, EyeOff, Sparkles, Sliders, CheckCircle, Command } from 'lucide-react';
+import { calculateATSScore } from './data/recommendationEngine';
+import { 
+  Eye, EyeOff, Sparkles, Sliders, CheckCircle, Target, 
+  Wand2, Layout, Clock, ArrowUpRight, ShieldCheck, Mail, Command
+} from 'lucide-react';
 
 const STORAGE_KEY = 'universal_resume_data_v1';
 const TEMPLATE_KEY = 'universal_resume_template_v1';
@@ -45,7 +51,7 @@ export default function App() {
     return 'portrait';
   });
 
-  const [activeMode, setActiveMode] = useState('interview'); // 'interview' | 'editor'
+  const [activeMode, setActiveMode] = useState('interview'); // 'interview' | 'editor' | 'canvas'
   const [showLivePreviewInInterview, setShowLivePreviewInInterview] = useState(true);
 
   // Modals
@@ -53,13 +59,15 @@ export default function App() {
   const [isATSModalOpen, setIsATSModalOpen] = useState(false);
   const [isCoverLetterOpen, setIsCoverLetterOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isJobMatcherOpen, setIsJobMatcherOpen] = useState(false);
+  const [isBulletPolisherOpen, setIsBulletPolisherOpen] = useState(false);
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState('');
 
   const showToast = (msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
+    setTimeout(() => setToastMessage(''), 3200);
   };
 
   // Sync with LocalStorage
@@ -84,23 +92,22 @@ export default function App() {
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Command / Ctrl + K -> Open Command Palette
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsCommandPaletteOpen(prev => !prev);
-      }
-      // Command / Ctrl + J -> Open ATS Modal
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
-        e.preventDefault();
-        setIsATSModalOpen(prev => !prev);
-      }
-      // Command / Ctrl + L -> Open Cover Letter
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'l') {
-        e.preventDefault();
-        setIsCoverLetterOpen(prev => !prev);
+      if (e.metaKey || e.ctrlKey) {
+        if (e.key === 'k' || e.key === 'K') {
+          e.preventDefault();
+          setIsCommandPaletteOpen(prev => !prev);
+        } else if (e.key === 'j' || e.key === 'J') {
+          e.preventDefault();
+          setIsJobMatcherOpen(prev => !prev);
+        } else if (e.key === 'b' || e.key === 'B') {
+          e.preventDefault();
+          setIsBulletPolisherOpen(prev => !prev);
+        } else if (e.key === 'l' || e.key === 'L') {
+          e.preventDefault();
+          setIsCoverLetterOpen(prev => !prev);
+        }
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
@@ -111,7 +118,7 @@ export default function App() {
     if (sampleData.recommendedTemplate) {
       setSelectedTemplate(sampleData.recommendedTemplate);
     }
-    showToast(`Loaded "${sampleData.personal.title || 'Sample Profile'}"!`);
+    showToast(`Loaded "${sampleData.personal?.title || 'Sample Profile'}"!`);
   };
 
   // Reset to blank template
@@ -175,7 +182,7 @@ export default function App() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(resumeData, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `resume-${(resumeData.personal.fullName || 'export').toLowerCase().replace(/\s+/g, '-')}.json`);
+    downloadAnchor.setAttribute("download", `resume-${(resumeData.personal?.fullName || 'export').toLowerCase().replace(/\s+/g, '-')}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -209,17 +216,20 @@ export default function App() {
     window.print();
   };
 
+  const currentTemplateObj = TEMPLATES_CATALOG.find(t => t.id === selectedTemplate) || TEMPLATES_CATALOG[0];
+  const atsScore = calculateATSScore(resumeData).score;
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen mesh-bg text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-semibold animate-bounce border border-white/20">
-          <CheckCircle className="w-4 h-4" />
+        <div className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold animate-bounce ring-1 ring-white/20">
+          <CheckCircle className="w-4 h-4 text-emerald-300" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Navigation Header */}
+      {/* Floating Glass Navigation Header */}
       <Navbar
         activeMode={activeMode}
         setActiveMode={setActiveMode}
@@ -227,6 +237,8 @@ export default function App() {
         setSelectedTemplate={setSelectedTemplate}
         onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
         onOpenATSModal={() => setIsATSModalOpen(true)}
+        onOpenJobMatcher={() => setIsJobMatcherOpen(true)}
+        onOpenBulletPolisher={() => setIsBulletPolisherOpen(true)}
         onOpenCoverLetter={() => setIsCoverLetterOpen(true)}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onLoadSample={handleLoadSample}
@@ -236,53 +248,80 @@ export default function App() {
         resumeData={resumeData}
       />
 
-      {/* Main Content Area with Ambient Lighting */}
-      <main className="flex-1 max-w-[1680px] w-full mx-auto p-3 sm:p-6 ambient-glow">
-        {/* INTERVIEW MODE */}
-        {activeMode === 'interview' ? (
-          <div className="space-y-6">
-            {/* Top Interview Banner & Live Preview Toggle */}
-            <div className="no-print flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/70 backdrop-blur-xl border border-white/10 rounded-2xl p-3.5 px-5 shadow-lg">
-              <div className="flex items-center gap-3">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <span className="text-xs font-semibold text-slate-200">
-                  Interactive AI Career Consultant Active — responses dynamically generate ATS architecture
-                </span>
-              </div>
+      {/* Top Quick Status & Actions Bar */}
+      <div className="no-print max-w-[1700px] w-full mx-auto px-3 sm:px-6 pt-3">
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-2.5 px-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+          {/* Left: Active Architecture & Live Status */}
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setIsTemplatesModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 text-xs text-slate-200 transition-all group"
+            >
+              <span className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: currentTemplateObj.accentColor }}></span>
+              <span className="font-bold text-white group-hover:text-blue-400 transition-colors">{currentTemplateObj.name}</span>
+              <span className="text-[10px] text-slate-500 font-mono">({orientation.toUpperCase()})</span>
+              <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover:text-blue-400 transition-colors" />
+            </button>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsCommandPaletteOpen(true)}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition-colors border border-slate-700"
-                >
-                  <Command className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Command Center</span>
-                  <kbd className="text-[10px] text-slate-400 font-mono">⌘K</kbd>
-                </button>
+            <span className="h-4 w-px bg-slate-800 hidden sm:block"></span>
 
-                <button
-                  onClick={() => setShowLivePreviewInInterview(!showLivePreviewInInterview)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition-colors border border-slate-700"
-                >
-                  {showLivePreviewInInterview ? (
-                    <>
-                      <EyeOff className="w-3.5 h-3.5 text-blue-400" />
-                      <span>Hide Side Canvas</span>
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="w-3.5 h-3.5 text-blue-400" />
-                      <span>Show Live Canvas</span>
-                    </>
-                  )}
-                </button>
-              </div>
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-slate-300 font-medium">ATS Score:</span>
+              <span className={`font-black ${atsScore >= 80 ? 'text-emerald-400' : 'text-amber-400'}`}>{atsScore}%</span>
             </div>
+          </div>
 
-            {/* Split view or Centered view */}
+          {/* Right: Quick Launch AI Tools */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsJobMatcherOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all shadow-sm"
+              title="Compare with Target Job Description (⌘J)"
+            >
+              <Target className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Job Scanner</span>
+              <kbd className="hidden md:inline text-[9px] text-emerald-400 font-mono ml-0.5">⌘J</kbd>
+            </button>
+
+            <button
+              onClick={() => setIsBulletPolisherOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-950/40 hover:bg-purple-900/50 text-purple-300 border border-purple-500/30 text-xs font-bold transition-all shadow-sm"
+              title="Enhance experience bullets with power action verbs (⌘B)"
+            >
+              <Wand2 className="w-3.5 h-3.5 text-purple-400" />
+              <span>Bullet Polish</span>
+              <kbd className="hidden md:inline text-[9px] text-purple-400 font-mono ml-0.5">⌘B</kbd>
+            </button>
+
+            <button
+              onClick={() => setIsCoverLetterOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 text-blue-300 border border-blue-500/30 text-xs font-bold transition-all shadow-sm"
+              title="Generate matching cover letter (⌘L)"
+            >
+              <Mail className="w-3.5 h-3.5 text-blue-400" />
+              <span>Cover Letter</span>
+              <kbd className="hidden md:inline text-[9px] text-blue-400 font-mono ml-0.5">⌘L</kbd>
+            </button>
+
+            <button
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold transition-all shadow-sm"
+              title="Open Command Center (⌘K)"
+            >
+              <Command className="w-3.5 h-3.5 text-blue-400" />
+              <span className="hidden sm:inline">Commands</span>
+              <kbd className="text-[9px] text-slate-400 font-mono">⌘K</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-[1700px] w-full mx-auto p-3 sm:p-6 ambient-glow">
+        {/* INTERVIEW MODE */}
+        {activeMode === 'interview' && (
+          <div className="space-y-6">
             <div className={`grid grid-cols-1 ${showLivePreviewInInterview ? 'xl:grid-cols-12' : ''} gap-6 items-start`}>
               <div className={`${showLivePreviewInInterview ? 'xl:col-span-6 2xl:col-span-5' : 'max-w-4xl mx-auto w-full'}`}>
                 <InterviewWizard
@@ -295,7 +334,7 @@ export default function App() {
               </div>
 
               {showLivePreviewInInterview && (
-                <div className="xl:col-span-6 2xl:col-span-7 sticky top-16 h-[calc(100vh-100px)] flex flex-col">
+                <div className="xl:col-span-6 2xl:col-span-7 sticky top-16 h-[calc(100vh-120px)] flex flex-col">
                   <ResumePreview
                     resumeData={resumeData}
                     selectedTemplate={selectedTemplate}
@@ -309,18 +348,19 @@ export default function App() {
                     orientation={orientation}
                     setOrientation={setOrientation}
                     onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
-                    onOpenCoverLetter={() => setIsCoverLetterOpen(true)}
                   />
                 </div>
               )}
             </div>
           </div>
-        ) : (
-          /* VISUAL STUDIO MODE (Split Left Form, Right Live Canvas) */
+        )}
+
+        {/* VISUAL STUDIO MODE */}
+        {activeMode === 'editor' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left Column: Form Editor */}
-            <div className="lg:col-span-5 xl:col-span-4 h-[calc(100vh-100px)] overflow-y-auto pr-1 pb-10">
-              <div className="mb-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+            <div className="lg:col-span-5 xl:col-span-4 h-[calc(100vh-120px)] overflow-y-auto pr-1 pb-10">
+              <div className="mb-4 flex items-center justify-between bg-slate-900/60 backdrop-blur-md p-3 rounded-2xl border border-slate-800">
                 <div>
                   <h2 className="text-base font-bold text-white flex items-center gap-2">
                     <Sliders className="w-4 h-4 text-blue-400" />
@@ -343,7 +383,7 @@ export default function App() {
             </div>
 
             {/* Right Column: Live Resume Canvas */}
-            <div className="lg:col-span-7 xl:col-span-8 sticky top-16 h-[calc(100vh-100px)] flex flex-col">
+            <div className="lg:col-span-7 xl:col-span-8 sticky top-16 h-[calc(100vh-120px)] flex flex-col">
               <ResumePreview
                 resumeData={resumeData}
                 selectedTemplate={selectedTemplate}
@@ -357,9 +397,28 @@ export default function App() {
                 orientation={orientation}
                 setOrientation={setOrientation}
                 onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
-                onOpenCoverLetter={() => setIsCoverLetterOpen(true)}
               />
             </div>
+          </div>
+        )}
+
+        {/* FULL CANVAS MODE */}
+        {activeMode === 'canvas' && (
+          <div className="h-[calc(100vh-120px)] flex flex-col">
+            <ResumePreview
+              resumeData={resumeData}
+              selectedTemplate={selectedTemplate}
+              setSelectedTemplate={setSelectedTemplate}
+              themeColor={themeColor}
+              setThemeColor={setThemeColor}
+              fontOption={fontOption}
+              setFontOption={setFontOption}
+              paperSize={paperSize}
+              setPaperSize={setPaperSize}
+              orientation={orientation}
+              setOrientation={setOrientation}
+              onOpenTemplatesModal={() => setIsTemplatesModalOpen(true)}
+            />
           </div>
         )}
       </main>
@@ -386,6 +445,24 @@ export default function App() {
           }
           showToast(`Switched format to "${TEMPLATES_CATALOG.find(t => t.id === tplId)?.name}"`);
         }}
+      />
+
+      {/* Target Job Matcher Modal */}
+      <JobMatcherModal
+        isOpen={isJobMatcherOpen}
+        onClose={() => setIsJobMatcherOpen(false)}
+        resumeData={resumeData}
+        setResumeData={setResumeData}
+        onShowToast={showToast}
+      />
+
+      {/* Bullet Point Polisher Modal */}
+      <BulletPolishModal
+        isOpen={isBulletPolisherOpen}
+        onClose={() => setIsBulletPolisherOpen(false)}
+        resumeData={resumeData}
+        setResumeData={setResumeData}
+        onShowToast={showToast}
       />
 
       {/* AI Matching Cover Letter Modal */}
